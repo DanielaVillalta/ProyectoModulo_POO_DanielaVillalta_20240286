@@ -17,5 +17,6 @@ public class ProviderService {
     }
 
     public boolean removerProveedor(Long id) {
+        return false;
     }
 }
