@@ -21,19 +21,32 @@ import java.util.Map;
 @RequestMapping("/apiProviders")
 public class ProviderController {
     @Autowired
-    ProviderService service;
+    ProviderService service; //Objeto del service
 
     //Obtiene la lista de proveedores
     @GetMapping("/getProviders") //localhost:8080/apiProviders/getProviders
-    public List<ProviderDTO> obtenerDatos() {
-        return service.obtenerProveedores();
+    public ResponseEntity<?> obtenerProveedores() {
+        try {
+            List<ProviderDTO> obtenerDatos; {
+                return ResponseEntity.status(HttpStatus.FOUND).body(Map.of(
+                        "data", service.obtenerProveedores()
+                ));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "status", "error",
+                            "message", "No se pudieron obtener los datos.",
+                            "detail", e.getMessage()
+                    ));
+        }
     }
 
     //Inserta un proveedor
     @PostMapping("/postProvider") //localhost:8080/apiProviders/postProvider
     public ResponseEntity<?> nuevoProveedor(@Valid @RequestBody ProviderDTO json, HttpServletRequest request) {
         try {
-            ProviderDTO respuesta = service.insertarDatos(json);
+            ProviderDTO respuesta = service.insertarDatos(json); //Trae los datos desde el service, de tipo DTO
             //Si los datos no pueden ser insertados, muestra un mensaje de error
             if (respuesta == null) {
                 return ResponseEntity.badRequest().body(Map.of(
@@ -113,7 +126,7 @@ public class ProviderController {
 
     //Busca a un proveedor por su nombre
     @GetMapping("/buscar") //localhost:8080/apiProviders/buscar?nombre={busqueda}
-    public ResponseEntity<?> buscarProveedores (@RequestParam String nombre) {
+    public ResponseEntity<?> buscarProveedores(@RequestParam String nombre) {
         List<ProviderDTO> resultados = service.buscarPorNombre(nombre);
         if (resultados.isEmpty()) { //Si el nombre de ningún proveedor coincide con el valor ingresado, muestra un mensaje
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron usuarios.");

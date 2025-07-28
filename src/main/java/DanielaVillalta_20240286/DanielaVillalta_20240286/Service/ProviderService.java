@@ -49,7 +49,7 @@ public class ProviderService {
     //Obtiene los proveedores y los convierte a formato dto
     public List<ProviderDTO> obtenerProveedores() {
         List<ProviderEntity> lista = repo.findAll();
-        return lista.stream()
+        return lista.stream() //Retorna la lista de proveedores para mostrarlos con el Controller
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
@@ -62,7 +62,7 @@ public class ProviderService {
         try {
             ProviderEntity entity = convertirAEntity(data);
             ProviderEntity proveedorGuardado = repo.save(entity);
-            return convertirADTO(proveedorGuardado);
+            return convertirADTO(proveedorGuardado); //Retorna el proveedor insertado para mostrarlo con el Controller
         } catch (Exception e) {
             log.error("Error al registrar el usuario: " + e.getMessage());
             throw new ExceptionProviderNotRegistered("Error al registrar el proveedor.");
@@ -80,7 +80,7 @@ public class ProviderService {
         existente.setStatus(json.getStatus());
         existente.setComments(json.getComments());
         ProviderEntity proveedorActualizado = repo.save(existente);
-        return convertirADTO(proveedorActualizado);
+        return convertirADTO(proveedorActualizado); //Retorna los datos actualizados del proveedor para mostrarlos con el Controller
     }
 
     //Borra a un proveedor seleccionado
@@ -89,9 +89,9 @@ public class ProviderService {
             ProviderEntity existente = repo.findById(id).orElse(null);
             if (existente != null) {
                 repo.deleteById(id);
-                return true;
+                return true; //Si el proceso sale bien, retorna verdadero
             } else {
-                return false;
+                return false; //Sino, retorna falso
             }
         } catch (EmptyResultDataAccessException e) {
             throw new EmptyResultDataAccessException("No se encontró el proveedor con ID " + id + " para eliminar", 1);
