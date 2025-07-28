@@ -13,12 +13,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
+@Slf4j //Permite utilizar log para mostrar mensajes en la consola
 @Service
 public class ProviderService {
     @Autowired
     ProviderRepository repo;
 
+    //Convierte todos los campos de formato entity a formato dto
     private ProviderDTO convertirADTO(ProviderEntity provider) {
         ProviderDTO dto = new ProviderDTO();
         dto.setId(provider.getId());
@@ -32,6 +33,7 @@ public class ProviderService {
         return dto;
     }
 
+    //Convierte todos los campos de formato dto a formato entity
     private ProviderEntity convertirAEntity(ProviderDTO data) {
         ProviderEntity entity = new ProviderEntity();
         entity.setName(data.getName());
@@ -44,13 +46,15 @@ public class ProviderService {
         return entity;
     }
 
-    public List<ProviderDTO> obtenerUsuarios() {
+    //Obtiene los proveedores y los convierte a formato dto
+    public List<ProviderDTO> obtenerProveedores() {
         List<ProviderEntity> lista = repo.findAll();
         return lista.stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
 
+    //Inserta los datos del nuevo proveedor en formato entity
     public ProviderDTO insertarDatos(ProviderDTO data) {
         if (data == null || data.getEmail().isEmpty() || data.getPhone().isEmpty()) {
             throw new IllegalArgumentException("Correo electrónico o número de teléfono no pueden estar vacíos");
@@ -65,6 +69,7 @@ public class ProviderService {
         }
     }
 
+    //Actualiza los datos del proveedor seleccionado en formato entity
     public ProviderDTO actualizarProveedor(Long id, ProviderDTO json) {
         ProviderEntity existente = repo.findById(id).orElseThrow(() -> new ExceptionProviderNotFound("Proveedor no encontrado."));
         existente.setName(json.getName());
@@ -78,6 +83,7 @@ public class ProviderService {
         return convertirADTO(proveedorActualizado);
     }
 
+    //Borra a un proveedor seleccionado
     public boolean removerProveedor(Long id) {
         try {
             ProviderEntity existente = repo.findById(id).orElse(null);
@@ -92,6 +98,7 @@ public class ProviderService {
         }
     }
 
+    //Busca proveedores por su nombre, utilizando un método de Entity, y los lista
     public List<ProviderDTO> buscarPorNombre (String nombre) {
         List<ProviderEntity> entidad = repo.findByNameContainingIgnoreCase(nombre);
         return entidad.stream()

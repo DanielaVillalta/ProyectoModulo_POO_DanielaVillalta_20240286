@@ -7,13 +7,14 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "TBPROVIDER")
+@Table(name = "TBPROVIDER") //La tabla es TbProvider
 @Getter @Setter @ToString @EqualsAndHashCode
 public class ProviderEntity {
+    //Atributos de la tabla
     @Id
     @Column(name = "PROVIDERID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_provider")
-    @SequenceGenerator(name = "seq_provider", sequenceName = "seq_provider", allocationSize = 1)
+    @SequenceGenerator(name = "seq_provider", sequenceName = "seq_provider", allocationSize = 1) //Genera una secuencia que aumenta de uno en uno para el ID del proveedor
     private Long id;
 
     @Column(name = "PROVIDERNAME")
@@ -32,7 +33,7 @@ public class ProviderEntity {
     private String code;
 
     @Column(name = "PROVIDERSTATUS")
-    private Integer status;
+    private long status;
 
     @Column(name = "PROVIDERCOMMENTS")
     private String comments;

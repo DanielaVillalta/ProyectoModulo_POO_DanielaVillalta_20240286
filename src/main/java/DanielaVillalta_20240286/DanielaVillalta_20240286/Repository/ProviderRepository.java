@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ProviderRepository extends JpaRepository<ProviderEntity, Long> {
+    //Es equivalente a tener una sentencia LIKE en sql
     List<ProviderEntity> findByNameContainingIgnoreCase(String name);
 }
