@@ -73,7 +73,7 @@ public class ProviderController {
         } catch (ExceptionDuplicatedData e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                     "Error", "DatosDuplicados",
-                    "Campo", e.getMessage())
+                    "Campo", e.getCampoDuplicado())
             );
         }
     }
