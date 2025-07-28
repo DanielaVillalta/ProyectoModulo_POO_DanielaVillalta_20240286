@@ -1,11 +1,13 @@
 package DanielaVillalta_20240286.DanielaVillalta_20240286.Service;
 
 import DanielaVillalta_20240286.DanielaVillalta_20240286.Entity.ProviderEntity;
+import DanielaVillalta_20240286.DanielaVillalta_20240286.Exceptions.ExceptionProviderNotFound;
+import DanielaVillalta_20240286.DanielaVillalta_20240286.Exceptions.ExceptionProviderNotRegistered;
 import DanielaVillalta_20240286.DanielaVillalta_20240286.Models.DTO.ProviderDTO;
 import DanielaVillalta_20240286.DanielaVillalta_20240286.Repository.ProviderRepository;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,16 +57,45 @@ public class ProviderService {
         }
         try {
             ProviderEntity entity = convertirAEntity(data);
-            ProviderEntity usuarioGuardado = repo.save(entity);
-            return convertirADTO(usuarioGuardado);
+            ProviderEntity proveedorGuardado = repo.save(entity);
+            return convertirADTO(proveedorGuardado);
+        } catch (Exception e) {
+            log.error("Error al registrar el usuario: " + e.getMessage());
+            throw new ExceptionProviderNotRegistered("Error al registrar el proveedor.");
         }
     }
 
-    public ProviderDTO actualizarProveedor(Long id, @Valid ProviderDTO json) {
-        return null;
+    public ProviderDTO actualizarProveedor(Long id, ProviderDTO json) {
+        ProviderEntity existente = repo.findById(id).orElseThrow(() -> new ExceptionProviderNotFound("Proveedor no encontrado."));
+        existente.setName(json.getName());
+        existente.setPhone(json.getPhone());
+        existente.setAddress(json.getAddress());
+        existente.setEmail(json.getEmail());
+        existente.setCode(json.getCode());
+        existente.setStatus(json.getStatus());
+        existente.setComments(json.getComments());
+        ProviderEntity proveedorActualizado = repo.save(existente);
+        return convertirADTO(proveedorActualizado);
     }
 
     public boolean removerProveedor(Long id) {
-        return false;
+        try {
+            ProviderEntity existente = repo.findById(id).orElse(null);
+            if (existente != null) {
+                repo.deleteById(id);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (EmptyResultDataAccessException e) {
+            throw new EmptyResultDataAccessException("No se encontró el proveedor con ID " + id + " para eliminar", 1);
+        }
+    }
+
+    public List<ProviderDTO> buscarPorNombre (String nombre) {
+        List<ProviderEntity> entidad = repo.findByNameContainingIgnoreCase(nombre);
+        return entidad.stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
     }
 }

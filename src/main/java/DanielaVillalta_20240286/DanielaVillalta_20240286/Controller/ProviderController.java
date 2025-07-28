@@ -23,7 +23,7 @@ public class ProviderController {
     @Autowired
     ProviderService service;
 
-    @GetMapping("getProviders")
+    @GetMapping("/getProviders")
     public List<ProviderDTO> obtenerDatos() {
         return service.obtenerUsuarios();
     }
@@ -101,5 +101,14 @@ public class ProviderController {
                     "detail", e.getMessage()
             ));
         }
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<?> buscarProveedores (@RequestParam String nombre) {
+        List<ProviderDTO> resultados = service.buscarPorNombre(nombre);
+        if (resultados.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron usuarios.");
+        }
+        return ResponseEntity.ok(resultados);
     }
 }
